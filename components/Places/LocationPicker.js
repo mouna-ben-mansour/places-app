@@ -3,12 +3,24 @@ import OutlinedButton from "../UI/OutlinedButton";
 import {Colors} from "../../constants/colors";
 import { getCurrentPositionAsync, useForegroundPermissions } from "expo-location";
 import {PermissionStatus, useCameraPermissions} from "expo-image-picker";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {getMapPreview} from "../../util/location";
+import {useIsFocused, useNavigation, useRoute} from "@react-navigation/native";
 
 function LocationPicker() {
+    const navigation = useNavigation();
+    const route = useRoute();
     const [pickedLocation, setPickedLocation] = useState()
     const [locationPermissionInformation, requestPermission] = useForegroundPermissions();
+
+    const isFocused = useIsFocused();
+
+    useEffect(()=> {
+        if (isFocused && route.params) {
+            const mapPickedLocation =  {lat : route.params.pickedLat , lng: route.params.pickedLng};
+            setPickedLocation(mapPickedLocation);
+        }
+    },[route, isFocused]);
     async function verifyPermission(){
         if( locationPermissionInformation.status === PermissionStatus.UNDETERMINED) {
             const permissionResponse = await requestPermission();
@@ -32,7 +44,9 @@ function LocationPicker() {
            lng: location.coords.longitude
        });
     }
-    function pickOnMapHandler(){}
+    function pickOnMapHandler(){
+        navigation.navigate('Map');
+    }
 
     let mapPreview= <Text style={styles.previewText}>No location picked yet</Text>
 
