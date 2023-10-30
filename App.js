@@ -6,13 +6,40 @@ import AddPlace from "./screens/AddPlace";
 import Map from "./screens/Map";
 import IconButton from "./components/UI/IconButton";
 import {Colors} from "./constants/colors";
-
+import {useCallback, useEffect, useState} from "react";
+import {init} from "./util/database";
+import AppLoading from "expo-app-loading";
+import * as SplashScreen from 'expo-splash-screen';
+import PlaceDetails from "./screens/PlaceDetails";
 const Stack = createNativeStackNavigator();
 export default function App() {
+  const [dbInit, setDbInit] = useState(false)
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        init();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setDbInit(true)
+      }
+    }
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (dbInit) {
+      await SplashScreen.hideAsync();
+    }
+  }, [dbInit]);
+  if(!dbInit){
+    return null;
+  }
   return (
     <>
       <StatusBar style="auto" />
-      <NavigationContainer>
+      <NavigationContainer onReady={onLayoutRootView}>
         <Stack.Navigator screenOptions={{
           headerStyle: { backgroundColor: Colors.primary700},
           headerTintColor: Colors.gray700,
@@ -30,6 +57,7 @@ export default function App() {
           <Stack.Screen name="Map" component={Map} options={{
             title: "Map"
           }}/>
+          <Stack.Screen name="PlaceDetails" component={PlaceDetails}/>
         </Stack.Navigator>
       </NavigationContainer>
     </>
