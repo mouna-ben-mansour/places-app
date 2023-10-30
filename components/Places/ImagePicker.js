@@ -3,7 +3,7 @@ import {launchCameraAsync, useCameraPermissions, PermissionStatus} from 'expo-im
 import {useState} from "react";
 import {Colors} from "../../constants/colors";
 import OutlinedButton from "../UI/OutlinedButton";
-function ImagePicker() {
+function ImagePicker({onTakeImage}) {
     const [pickedImage, setPickedImage] = useState()
     const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
     async function verifyPermission(){
@@ -29,6 +29,7 @@ function ImagePicker() {
             quality: 0.5,
         });
         setPickedImage(image.assets);
+        onTakeImage(image.assets[0].uri);
     }
 
     let imagePreview= <Text style={styles.previewText}>No image taken yet</Text>
