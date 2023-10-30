@@ -90,7 +90,16 @@ export function getPlaceDetails(id){
                 'SELECT * FROM places WHERE id = ?',
                 [id],
                 (_,result) => {
-                    resolve(result.rows._array[0]);
+                    const place = new Place(result.rows._array[0].title,
+                        result.rows._array[0].imageUri,
+                        {
+                            address: result.rows._array[0].address,
+                            lat: result.rows._array[0].lat,
+                            lng: result.rows._array[0].lng
+                        },
+                        result.rows._array[0].id
+                    );
+                    resolve(place);
                 },
                 (_, error) => {
                     reject(error);
