@@ -11,7 +11,7 @@ function PlacesList({places}) {
     return (
         <FlatList
             data={places}
-            renderItem={(item) => <PlaceItem place={item} />}
+            renderItem={({item}) => <PlaceItem place={item} />}
             keyExtractor={(item) => item.id}
         />
     )
